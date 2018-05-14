@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:elevation="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         />
+
+    <Spinner
+        android:id="@+id/sort_task_list"
+        android:background="@drawable/button_border"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="40dp">
+
+    </Spinner>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/task_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/sort_task_list"
+        app:layout_constraintBottom_toTopOf="@+id/add_task_button"
+        />
+
+
+    <Button
+        android:id="@+id/add_task_button"
+        android:layout_width="0dp"
+        android:text="add task"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        android:padding="2dp"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/remove_task_button"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:clickable="false"
+        android:text="add task"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        android:padding="2dp"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="passed_due_time">#B22222</color>
+    <color name="colorDelete">#800000</color>
+    <color name="colorEdit">#228B22</color>
+    <color name="to_completed_task">#11A366</color>
+    <color name="colorPrimary">#007BF7</color>
+    <color name="colorPrimaryDark">#0A4BFF</color>
+    <color name="colorAccent">#09FFAD</color>
+</resources>

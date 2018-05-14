@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/to_completed_task"
+    android:id="@+id/task_view_layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/view_task_title"
+        android:textSize="40sp"
+        android:text="Homework"
+        android:layout_margin="20dp"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+
+    <CheckBox
+        android:id="@+id/task_view_is_completed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="30dp"/>
+
+    <View
+        android:id="@+id/hr"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_margin="20dp"
+        android:layout_height="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/view_task_title"/>
+
+
+    <TextView
+        android:text="Complete Mr Jacks Math Homework and Chemistry"
+        android:textSize="25sp"
+        android:layout_margin="20dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/hr"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/view_task_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/task_view_edit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="EDIT"
+        android:textSize="30sp"
+        android:textColor="@android:color/white"
+        android:layout_margin="20dp"
+        android:background="@color/colorEdit"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/task_view_delete"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="DELETE"
+        android:textSize="30sp"
+        android:textColor="@android:color/white"
+        android:layout_margin="20dp"
+        android:background="@color/colorDelete"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/view_task_description"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/text_view_date_created"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:text="Date Created: %1$s"
+            />
+
+        <TextView
+            android:id="@+id/task_view_date_due"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Due Date: %1$s"
+            />
+
+        <TextView
+            android:id="@+id/task_view_date_completed"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Completed:  %1$s"
+            />
+        <TextView
+            android:id="@+id/task_view_status"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status:  Complete"
+            />
+
+
+
+
+    </LinearLayout>
+
+
+
+
+</android.support.constraint.ConstraintLayout>
