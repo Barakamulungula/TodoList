@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -88,13 +89,10 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
                     updateTaskButton.setVisibility(View.VISIBLE);
                     saveTaskButton.setVisibility(View.GONE);
                     position = getArguments().getInt(TASK_POSITION_EDIT);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(activityCallback.getTaskList().get(position).getDueDate());
-                    Date date = calendar.getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                    SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm", Locale.US);
-                    dueDateButton.setText(simpleDateFormat.format(date));
-                    dueTimeButton.setText(simpleTimeFormat.format(date));
+                    DateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                    DateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+                    dueDateButton.setText(simpleDateFormat.format(activityCallback.getTaskList().get(position).getDueDate()));
+                    dueTimeButton.setText(simpleTimeFormat.format(activityCallback.getTaskList().get(position).getDueDate()));
                     titleInput.setText(activityCallback.getTaskList().get(position).getTitle());
                     descriptionInput.setText(activityCallback.getTaskList().get(position).getDescription());
                     dueDateButton.setTextColor(Color.BLACK);
@@ -115,9 +113,8 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
         if (!title.trim().isEmpty() && !description.trim().isEmpty() && dueDate != null) {
             try {
                 Date due_date = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US).parse(dueDate+" "+dueTime);
-                Calendar dateCreated = Calendar.getInstance();
-                Date date_created = dateCreated.getTime();
-                taskDatabase.taskDAO().addTask(new Task(title, description, date_created, due_date, false));
+                Calendar date_created = Calendar.getInstance();
+                taskDatabase.taskDAO().addTask(new Task(title, description, date_created.getTime(), due_date, false));
                 assert getActivity() != null;
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
                 checkListType();

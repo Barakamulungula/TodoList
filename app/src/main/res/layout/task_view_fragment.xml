@@ -38,7 +38,7 @@
 
 
     <TextView
-        android:text="Complete Mr Jacks Math Homework and Chemistry"
+        android:text="@string/sample_desc"
         android:textSize="25sp"
         android:layout_margin="20dp"
         android:textColor="@android:color/white"
@@ -52,7 +52,7 @@
         android:id="@+id/task_view_edit"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="EDIT"
+        android:text="@string/edit"
         android:textSize="30sp"
         android:textColor="@android:color/white"
         android:layout_margin="20dp"
@@ -64,7 +64,7 @@
         android:id="@+id/task_view_delete"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="DELETE"
+        android:text="@string/delete"
         android:textSize="30sp"
         android:textColor="@android:color/white"
         android:layout_margin="20dp"
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:text="Date Created: %1$s"
+            android:text="@string/date_created"
             />
 
         <TextView
@@ -97,7 +97,7 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Due Date: %1$s"
+            android:text="@string/due_date"
             />
 
         <TextView
@@ -106,7 +106,7 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date Completed:  %1$s"
+            android:text="@string/date_completed"
             />
         <TextView
             android:id="@+id/task_view_status"
@@ -114,7 +114,7 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status:  Complete"
+            android:text="@string/status"
             />
 
 

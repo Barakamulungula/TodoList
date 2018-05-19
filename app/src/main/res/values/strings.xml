@@ -2,7 +2,7 @@
     <string name="app_name">TodoList</string>
     <string name="complete">Complete</string>
     <string name="incomplete">Incomplete</string>
-    <string name="date_created">Date Added: %1$s</string>
+    <string name="date_created">Date added: %1$s</string>
     <string-array name="sort_list">
         <item>All task</item>
         <item>Status: Completed</item>
@@ -11,9 +11,13 @@
     <string name="due_date">Due date: %1$s</string>
     <string name="status">Status: %1$s</string>
     <string name="due_date_button">%1$d/%2$d/%3$d</string>
-    <string name="delete_game">Task deleted</string>
+    <string name="delete_game">Task Delete</string>
     <string name="delete_message">Are you sure you want to the delete the task ?</string>
     <string name="yes">Okay</string>
     <string name="no">Cancel</string>
+    <string name="date_completed">Date Completed: %1$s</string>
+    <string name="delete">DELETE</string>
+    <string name="edit">EDIT</string>
+    <string name="sample_desc">Complete Mr Jacks Math Homework and Chemistry</string>
 
 </resources>

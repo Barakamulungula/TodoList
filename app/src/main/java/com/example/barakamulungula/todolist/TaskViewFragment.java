@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,8 +46,7 @@ public class TaskViewFragment extends Fragment {
     private int position;
     private TaskDatabase taskDatabase;
     private ActivityCallback activityCallback;
-    SimpleDateFormat dateFormat;
-    Calendar calendar;
+    DateFormat dateFormat;
 
     public static TaskViewFragment newInstance() {
 
@@ -73,7 +73,6 @@ public class TaskViewFragment extends Fragment {
     public void onStart() {
         super.onStart();
         assert getArguments() != null;
-        calendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US);
         position = getArguments().getInt(TASK_POSITION);
         assert getActivity() != null;
@@ -85,16 +84,19 @@ public class TaskViewFragment extends Fragment {
                 Task task = activityCallback.getTaskList().get(position);
                 if (isChecked) {
                     task.setCompleted(true);
-                    calendar.clear();
-                    Date dateCompleted = calendar.getTime();
+                    Date dateCompleted = Calendar.getInstance().getTime();
+                    task.setDateCompleted(dateCompleted);
                     taskDatabase.taskDAO().updateTask(task);
                     taskViewLayout.setBackgroundResource(R.color.to_completed_task);
                     taskStatus.setText(getString(R.string.status, getString(R.string.complete)));
-                    dateCompletedTextView.setText(dateFormat.format(dateCompleted));
+                    dateCompletedTextView.setVisibility(View.VISIBLE);
+                    dateCompletedTextView.setText(getString(R.string.date_completed,
+                            dateFormat.format(task.getDateCompleted())));
                     Toast.makeText(getActivity(), "Task marked complete", Toast.LENGTH_SHORT).show();
                 } else {
                     task.setCompleted(false);
                     taskDatabase.taskDAO().updateTask(task);
+                    dateCompletedTextView.setVisibility(View.GONE);
                     taskViewLayout.setBackgroundResource(R.color.passed_due_time);
                     taskStatus.setText(getString(R.string.status, getString(R.string.incomplete)));
                     Toast.makeText(getActivity(), "Task marked incomplete", Toast.LENGTH_SHORT).show();
@@ -106,23 +108,25 @@ public class TaskViewFragment extends Fragment {
     }
 
     private void setUpView() {
-        calendar.clear();
-        calendar.setTime(activityCallback.getTaskList().get(position).getDateCreated());
         taskTitle.setText(activityCallback.getTaskList().get(position).getTitle());
         taskDesc.setText(activityCallback.getTaskList().get(position).getDescription());
         taskDueDate.setText(getString(R.string.due_date, dateFormat.format(
                 activityCallback.getTaskList().get(position).getDueDate())));
-
-//        taskDateCreated.setText(getString(R.string.date_created, dateFormat.format(
-//                activityCallback.getTaskList().get(position).getDateCompleted()
-//        )));
+        taskDateCreated.setText(getString(R.string.date_created, dateFormat.format(
+                activityCallback.getTaskList().get(position).getDateCreated()
+        )));
 
         if (activityCallback.getTaskList().get(position).isCompleted()) {
+            dateCompletedTextView.setVisibility(View.VISIBLE);
+            dateCompletedTextView.setText(
+                    getString(R.string.date_completed,
+                    dateFormat.format(activityCallback.getTaskList().get(position).getDateCompleted())));
             taskViewLayout.setBackgroundResource(R.color.to_completed_task);
             taskStatus.setText(getString(R.string.status, getString(R.string.complete)));
             statusCheckbox.setChecked(true);
 
         } else {
+            dateCompletedTextView.setVisibility(View.GONE);
             taskViewLayout.setBackgroundResource(R.color.passed_due_time);
             taskStatus.setText(getString(R.string.status, getString(R.string.incomplete)));
             statusCheckbox.setChecked(false);
@@ -141,6 +145,7 @@ public class TaskViewFragment extends Fragment {
     }
 
     private void checkListType(){
+        assert getArguments() != null;
         if(getArguments().getInt(SPINNER_LIST_TYPE) == 1){
             activityCallback.setTaskList(taskDatabase.taskDAO().getCompletedTask(true));
             activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(true));
