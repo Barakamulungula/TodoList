@@ -29,6 +29,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.example.barakamulungula.todolist.MainActivity.CLICK_TYPE;
+import static com.example.barakamulungula.todolist.MainActivity.SPINNER_LIST_TYPE;
 import static com.example.barakamulungula.todolist.MainActivity.TASK_POSITION_EDIT;
 
 public class AddTaskFragment extends Fragment implements DateCallBack {
@@ -82,21 +84,23 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
         descriptionInput.setText("");
         if(getArguments() != null) {
             if (!getArguments().isEmpty()) {
-                updateTaskButton.setVisibility(View.VISIBLE);
-                saveTaskButton.setVisibility(View.GONE);
-                position = getArguments().getInt(TASK_POSITION_EDIT);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(taskDatabase.taskDAO().getTasks().get(position).getDueDate());
-                Date date = calendar.getTime();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm", Locale.US);
-                dueDateButton.setText(simpleDateFormat.format(date));
-                dueTimeButton.setText(simpleTimeFormat.format(date));
-                titleInput.setText(taskDatabase.taskDAO().getTasks().get(position).getTitle());
-                descriptionInput.setText(taskDatabase.taskDAO().getTasks().get(position).getDescription());
-                dueDateButton.setTextColor(Color.BLACK);
-                dueTimeButton.setTextColor(Color.BLACK);
-                getArguments().clear();
+                if(getArguments().getInt(CLICK_TYPE) == 1) {
+                    updateTaskButton.setVisibility(View.VISIBLE);
+                    saveTaskButton.setVisibility(View.GONE);
+                    position = getArguments().getInt(TASK_POSITION_EDIT);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(activityCallback.getTaskList().get(position).getDueDate());
+                    Date date = calendar.getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                    SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+                    dueDateButton.setText(simpleDateFormat.format(date));
+                    dueTimeButton.setText(simpleTimeFormat.format(date));
+                    titleInput.setText(activityCallback.getTaskList().get(position).getTitle());
+                    descriptionInput.setText(activityCallback.getTaskList().get(position).getDescription());
+                    dueDateButton.setTextColor(Color.BLACK);
+                    dueTimeButton.setTextColor(Color.BLACK);
+                    getArguments().clear();
+                }
             }
         }
     }
@@ -116,7 +120,8 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
                 taskDatabase.taskDAO().addTask(new Task(title, description, date_created, due_date, false));
                 assert getActivity() != null;
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-                activityCallback.updateAdapter();
+                checkListType();
+                activityCallback.setTaskList(activityCallback.getTaskList());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -146,7 +151,7 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
                 assert getArguments() != null;
                 getArguments().clear();
-                activityCallback.updateAdapter();
+                checkListType();
                 Toast.makeText(getActivity(), "Task updated", Toast.LENGTH_SHORT).show();
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -187,6 +192,19 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
         dueTime = hour+":"+minute;
         dueTimeButton.setText(dueTime);
         dueTimeButton.setTextColor(Color.BLACK);
+    }
+
+    private void checkListType(){
+        if(getArguments().getInt(SPINNER_LIST_TYPE) == 1){
+            activityCallback.setTaskList(taskDatabase.taskDAO().getCompletedTask(true));
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(true));
+        }else if(getArguments().getInt(SPINNER_LIST_TYPE) == 2){
+            activityCallback.setTaskList(taskDatabase.taskDAO().getinCompleteTask(false));
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(false));
+        }else{
+            activityCallback.setTaskList(taskDatabase.taskDAO().getTasks());
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getTasks());
+        }
     }
 
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {

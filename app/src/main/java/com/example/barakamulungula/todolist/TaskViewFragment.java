@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.example.barakamulungula.todolist.MainActivity.SPINNER_LIST_TYPE;
 import static com.example.barakamulungula.todolist.MainActivity.TASK_POSITION;
 
 public class TaskViewFragment extends Fragment {
@@ -99,7 +100,7 @@ public class TaskViewFragment extends Fragment {
                     Toast.makeText(getActivity(), "Task marked incomplete", Toast.LENGTH_SHORT).show();
                 }
 
-                activityCallback.updateAdapter();
+                checkListType();
             }
         });
     }
@@ -136,8 +137,20 @@ public class TaskViewFragment extends Fragment {
                 .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_left)
                 .remove(this).commit();
         Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
-        activityCallback.setTaskList(taskDatabase.taskDAO().getTasks());
-        activityCallback.updateAdapter();
+        checkListType();
+    }
+
+    private void checkListType(){
+        if(getArguments().getInt(SPINNER_LIST_TYPE) == 1){
+            activityCallback.setTaskList(taskDatabase.taskDAO().getCompletedTask(true));
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(true));
+        }else if(getArguments().getInt(SPINNER_LIST_TYPE) == 2){
+            activityCallback.setTaskList(taskDatabase.taskDAO().getinCompleteTask(false));
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(false));
+        }else{
+            activityCallback.setTaskList(taskDatabase.taskDAO().getTasks());
+            activityCallback.updateAdapter(taskDatabase.taskDAO().getTasks());
+        }
     }
 
     @OnClick(R.id.task_view_edit)

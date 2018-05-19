@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public static final String TASK_POSITION = "POSITION";
     public static final String TASK_POSITION_EDIT = "TASK_POSITION";
-    List<Task> taskList = new ArrayList<>();
+    public static final String SPINNER_LIST_TYPE = "TYPE";
+    public static final String CLICK_TYPE = "EDIT/ADD_TASK";
+    private List<Task> taskList = new ArrayList<>();
     @BindView(R.id.sort_task_list)
     protected Spinner sortList;
     @BindView(R.id.task_recycler_view)
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private AddTaskFragment addTaskFragment;
     private TaskViewFragment taskViewFragment;
     private TaskDatabase taskDatabase;
+    private int spinnerListType= 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +83,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Todo: Handle spinner onitemselected events
         if (position == 1) {
             taskList = taskDatabase.taskDAO().getCompletedTask(true);
+            spinnerListType = position;
         } else if (position == 2) {
             taskList = taskDatabase.taskDAO().getinCompleteTask(false);
+            spinnerListType = position;
         }
         else if(position == 0){
             taskList = taskDatabase.taskDAO().getTasks();
+            spinnerListType = position;
         }
         taskAdapter.loadTaskList(taskList);
         taskAdapter.notifyDataSetChanged();
@@ -97,9 +103,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @OnClick(R.id.add_task_button)
     protected void addTask() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
+        bundle.putInt(CLICK_TYPE, 0);bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
         addTaskFragment.setActivityCallback(this);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
                 .replace(R.id.fragment_container, addTaskFragment).commit();
+        addTaskFragment.setArguments(bundle);
     }
 
     @Override
@@ -180,8 +190,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     @Override
-    public void updateAdapter() {
-        taskAdapter.loadTaskList(taskDatabase.taskDAO().getTasks());
+    public void updateAdapter(List<Task> taskList) {
+        taskAdapter.loadTaskList(taskList);
     }
 
 
@@ -189,7 +199,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void editTask(int position) {
         Bundle bundle = new Bundle();
         bundle.putInt(TASK_POSITION_EDIT, position);
-        bundle.putString("TYPE", "EDIT");
+        bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
+        bundle.putInt(CLICK_TYPE, 1);
         addTaskFragment.setActivityCallback(this);
         getSupportFragmentManager().beginTransaction().remove(taskViewFragment).commit();
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
