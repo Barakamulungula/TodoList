@@ -11,5 +11,9 @@
     <string name="due_date">Due date: %1$s</string>
     <string name="status">Status: %1$s</string>
     <string name="due_date_button">%1$d/%2$d/%3$d</string>
+    <string name="delete_game">Task deleted</string>
+    <string name="delete_message">Are you sure you want to the delete the task ?</string>
+    <string name="yes">Okay</string>
+    <string name="no">Cancel</string>
 
 </resources>

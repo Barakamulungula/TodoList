@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,47 +24,10 @@ import butterknife.ButterKnife;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     private List<Task> taskList;
     private AdapterCallBack adapterCallBack;
-    private int listType = 0;
-    private List<Task> completedList = new ArrayList<>();
-    private List<Task> incompleteList = new ArrayList<>();
 
     public TaskAdapter(List<Task> taskList, AdapterCallBack adapterCallBack) {
         this.taskList = taskList;
         this.adapterCallBack = adapterCallBack;
-    }
-
-    public void setListType(int listType) {
-        this.listType = listType;
-        if (!adapterCallBack.taskDatabase().taskDAO().getTasks().isEmpty()) {
-            for(Task task: adapterCallBack.taskDatabase().taskDAO().getTasks()){
-                if(task.isCompleted() && !completedList.contains(task)){
-                    completedList.add(task);
-                    if(incompleteList.contains(task)){
-                        incompleteList.remove(task);
-                    }
-                }else if(!task.isCompleted() && !incompleteList.contains(task)){
-                    incompleteList.add(task);
-                    if(completedList.contains(task)){
-                        completedList.remove(task);
-                    }
-
-                }
-            }
-
-        }
-        if (listType == 1) {
-            loadTaskList(completedList);
-            Log.println(Log.WARN, "COMPLETE LIST:", "LOADED, SIZE:"+completedList.size());
-        }
-        if(listType == 2){
-            loadTaskList(incompleteList);
-            Log.println(Log.WARN, "INCOMPLETE LIST:", "LOADED, SIZE:"+incompleteList.size());
-        }
-        if(listType == 0){
-            loadTaskList(adapterCallBack.taskDatabase().taskDAO().getTasks());
-            Log.println(Log.WARN, "LIST:", "LOADED, SIZE:"+taskList.size());
-        }
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -103,63 +65,32 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         protected TextView dueDateTextView;
         @BindView(R.id.status)
         protected TextView taskStatusTextView;
-        @BindView(R.id.task_checkbox)
-        protected CheckBox taskIsChecked;
-        private Calendar calendar;
-
 
         public ViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            taskIsChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Task task = adapterCallBack.taskDatabase().taskDAO().getTasks().get(getAdapterPosition());
-                    if(isChecked){
-                        task.setCompleted(true);
-                        if(incompleteList.contains(task)){
-                            incompleteList.remove(task);
-                        }
-
-                        adapterCallBack.taskDatabase().taskDAO().updateTask(task);
-                        itemView.setBackgroundResource(R.color.to_completed_task);
-                        adapterCallBack.setCompleteStatus(taskStatusTextView);
-                    }else{
-                        if(incompleteList.contains(task)){
-                            incompleteList.remove(task);
-                        }
-                        task.setCompleted(false);
-                        adapterCallBack.taskDatabase().taskDAO().updateTask(task);
-                        itemView.setBackgroundResource(R.color.passed_due_time);
-                        adapterCallBack.setinCompleteStatus(taskStatusTextView);
-                    }
-                }
-            });
         }
 
         void bind(Task task) {
-
             titleTextView.setText(task.getTitle());
-            calendar = Calendar.getInstance();
-            calendar.setTime(task.getDueDate());
-            Date date = calendar.getTime();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
-            dueDateTextView.setText(simpleDateFormat.format(date));
-            if (task.isCompleted()) {
-                itemConstraintLayout.setBackgroundResource(R.color.to_completed_task);
-                taskIsChecked.setChecked(true);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US);
+            dueDateTextView.setText(simpleDateFormat.format(task.getDueDate()));
+            if(task.isCompleted()){
+                    itemConstraintLayout.setBackgroundResource(R.color.to_completed_task);
+                    adapterCallBack.setCompleteStatus(taskStatusTextView);
             } else {
-                itemConstraintLayout.setBackgroundResource(R.color.passed_due_time);
-                taskIsChecked.setChecked(false);
+                    itemConstraintLayout.setBackgroundResource(R.color.passed_due_time);
+                    adapterCallBack.setinCompleteStatus(taskStatusTextView);
             }
-
 
         }
 
+        //Todo: Handle on onlong press event on adpater items
         public View.OnLongClickListener onLongClickListener(final int position) {
             return new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    adapterCallBack.longPressDeleteTask(adapterCallBack.taskDatabase().taskDAO().getTasks().get(position));
                     return false;
                 }
             };
@@ -169,7 +100,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
             return new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        adapterCallBack.viewTask(position);
+                    adapterCallBack.viewTask(position);
                 }
             };
         }

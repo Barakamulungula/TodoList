@@ -31,55 +31,51 @@ public class Task {
         return title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public Date getDateCompleted() {
-        return dateCompleted;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+    
+    public Date getDueDate() {
+        return dueDate;
     }
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
 
+    public Date getDateCompleted() {
+        return dateCompleted;
+    }
+
     public void setDateCompleted(Date dateCompleted) {
         this.dateCompleted = dateCompleted;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }

@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/to_completed_task"
+    android:clickable="true"
     android:id="@+id/task_view_layout"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/view_task_title"
         android:textSize="40sp"
-        android:text="Homework"
         android:layout_margin="20dp"
         android:textColor="@android:color/white"
         android:layout_width="wrap_content"

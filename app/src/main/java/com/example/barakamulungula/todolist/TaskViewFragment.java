@@ -25,16 +25,8 @@ import butterknife.OnClick;
 import static com.example.barakamulungula.todolist.MainActivity.TASK_POSITION;
 
 public class TaskViewFragment extends Fragment {
-    private int position;
-    private TaskDatabase taskDatabase;
-    private ActivityCallback activityCallback;
-
-    public void setActivityCallback(ActivityCallback activityCallback) {
-        this.activityCallback = activityCallback;
-    }
-
     @BindView(R.id.task_view_date_completed)
-    TextView dateCompleted;
+    TextView dateCompletedTextView;
     @BindView(R.id.view_task_title)
     TextView taskTitle;
     @BindView(R.id.view_task_description)
@@ -49,7 +41,24 @@ public class TaskViewFragment extends Fragment {
     ConstraintLayout taskViewLayout;
     @BindView(R.id.task_view_is_completed)
     CheckBox statusCheckbox;
+    private int position;
+    private TaskDatabase taskDatabase;
+    private ActivityCallback activityCallback;
+    SimpleDateFormat dateFormat;
+    Calendar calendar;
 
+    public static TaskViewFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        TaskViewFragment fragment = new TaskViewFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public void setActivityCallback(ActivityCallback activityCallback) {
+        this.activityCallback = activityCallback;
+    }
 
     @Nullable
     @Override
@@ -63,6 +72,8 @@ public class TaskViewFragment extends Fragment {
     public void onStart() {
         super.onStart();
         assert getArguments() != null;
+        calendar = Calendar.getInstance();
+        dateFormat = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US);
         position = getArguments().getInt(TASK_POSITION);
         assert getActivity() != null;
         taskDatabase = ((TaskApplication) getActivity().getApplicationContext()).getDatabase();
@@ -70,14 +81,17 @@ public class TaskViewFragment extends Fragment {
         statusCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Task task = taskDatabase.taskDAO().getTasks().get(position);
-                if(isChecked){
+                Task task = activityCallback.getTaskList().get(position);
+                if (isChecked) {
                     task.setCompleted(true);
+                    calendar.clear();
+                    Date dateCompleted = calendar.getTime();
                     taskDatabase.taskDAO().updateTask(task);
                     taskViewLayout.setBackgroundResource(R.color.to_completed_task);
                     taskStatus.setText(getString(R.string.status, getString(R.string.complete)));
+                    dateCompletedTextView.setText(dateFormat.format(dateCompleted));
                     Toast.makeText(getActivity(), "Task marked complete", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     task.setCompleted(false);
                     taskDatabase.taskDAO().updateTask(task);
                     taskViewLayout.setBackgroundResource(R.color.passed_due_time);
@@ -90,35 +104,24 @@ public class TaskViewFragment extends Fragment {
         });
     }
 
-    public static TaskViewFragment newInstance() {
-
-        Bundle args = new Bundle();
-
-        TaskViewFragment fragment = new TaskViewFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    private void setUpView(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(taskDatabase.taskDAO().getTasks().get(position).getDueDate());
-        Date dueDate = calendar.getTime();
+    private void setUpView() {
         calendar.clear();
-        calendar.setTime(taskDatabase.taskDAO().getTasks().get(position).getDateCreated());
-        Date dateCompleted = calendar.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+        calendar.setTime(activityCallback.getTaskList().get(position).getDateCreated());
+        taskTitle.setText(activityCallback.getTaskList().get(position).getTitle());
+        taskDesc.setText(activityCallback.getTaskList().get(position).getDescription());
+        taskDueDate.setText(getString(R.string.due_date, dateFormat.format(
+                activityCallback.getTaskList().get(position).getDueDate())));
 
-        taskTitle.setText(taskDatabase.taskDAO().getTasks().get(position).getTitle());
-        taskDesc.setText(taskDatabase.taskDAO().getTasks().get(position).getDescription());
-        taskDueDate.setText(getString(R.string.due_date, dateFormat.format(dueDate)));
-        taskDateCreated.setText(getString(R.string.date_created, dateFormat.format(dateCompleted)));
+//        taskDateCreated.setText(getString(R.string.date_created, dateFormat.format(
+//                activityCallback.getTaskList().get(position).getDateCompleted()
+//        )));
 
-        if(taskDatabase.taskDAO().getTasks().get(position).isCompleted()){
+        if (activityCallback.getTaskList().get(position).isCompleted()) {
             taskViewLayout.setBackgroundResource(R.color.to_completed_task);
             taskStatus.setText(getString(R.string.status, getString(R.string.complete)));
             statusCheckbox.setChecked(true);
 
-        }else {
+        } else {
             taskViewLayout.setBackgroundResource(R.color.passed_due_time);
             taskStatus.setText(getString(R.string.status, getString(R.string.incomplete)));
             statusCheckbox.setChecked(false);
@@ -126,19 +129,20 @@ public class TaskViewFragment extends Fragment {
     }
 
     @OnClick(R.id.task_view_delete)
-    protected void deleteTask(){
-        taskDatabase.taskDAO().deleteTask(taskDatabase.taskDAO().getTasks().get(position));
+    protected void deleteTask() {
+        taskDatabase.taskDAO().deleteTask(activityCallback.getTaskList().get(position));
         assert getActivity() != null;
         getActivity().getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_left)
                 .remove(this).commit();
         Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
+        activityCallback.setTaskList(taskDatabase.taskDAO().getTasks());
         activityCallback.updateAdapter();
     }
 
     @OnClick(R.id.task_view_edit)
-    protected void editTask(){
-
+    protected void editTask() {
+        activityCallback.editTask(position);
     }
 
 }

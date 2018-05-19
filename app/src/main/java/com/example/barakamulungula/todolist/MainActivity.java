@@ -1,15 +1,19 @@
 package com.example.barakamulungula.todolist;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,9 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterCallBack, ActivityCallback {
 
+    public static final String TASK_POSITION = "POSITION";
+    public static final String TASK_POSITION_EDIT = "TASK_POSITION";
+    List<Task> taskList = new ArrayList<>();
     @BindView(R.id.sort_task_list)
     protected Spinner sortList;
     @BindView(R.id.task_recycler_view)
@@ -28,50 +35,68 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected Button removeTaskButton;
     @BindView(R.id.add_task_button)
     protected Button addTaskButton;
-
     private TaskAdapter taskAdapter;
-
     private AddTaskFragment addTaskFragment;
     private TaskViewFragment taskViewFragment;
     private TaskDatabase taskDatabase;
-    public static final String TASK_POSITION = "POSITION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        taskDatabase = ((TaskApplication) getApplicationContext() ).getDatabase();
+        //Get task database
+        taskDatabase = ((TaskApplication) getApplicationContext()).getDatabase();
+        //set on item select for Spinner
         sortList.setOnItemSelectedListener(this);
-        ArrayAdapter <CharSequence> dropdownAdapter = ArrayAdapter.createFromResource(this,
+
+        //Add element to spinner
+        ArrayAdapter<CharSequence> dropdownAdapter = ArrayAdapter.createFromResource(this,
                 R.array.sort_list, android.R.layout.simple_spinner_dropdown_item);
         dropdownAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortList.setAdapter(dropdownAdapter);
+
+        //set up recycler view
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         taskAdapter = new TaskAdapter(taskDatabase.taskDAO().getTasks(), this);
         recyclerView.setAdapter(taskAdapter);
         taskAdapter.notifyDataSetChanged();
 
+        addTaskFragment = AddTaskFragment.newInstance();
+        taskViewFragment = TaskViewFragment.newInstance();
+
     }
-
-
-
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        taskList = taskDatabase.taskDAO().getTasks();
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        taskAdapter.setListType(position);
+        //Todo: Handle spinner onitemselected events
+        if (position == 1) {
+            taskList = taskDatabase.taskDAO().getCompletedTask(true);
+        } else if (position == 2) {
+            taskList = taskDatabase.taskDAO().getinCompleteTask(false);
+        }
+        else if(position == 0){
+            taskList = taskDatabase.taskDAO().getTasks();
+        }
+        taskAdapter.loadTaskList(taskList);
         taskAdapter.notifyDataSetChanged();
     }
+
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
     @OnClick(R.id.add_task_button)
-    protected void addTask(){
-        addTaskFragment = AddTaskFragment.newInstance();
+    protected void addTask() {
         addTaskFragment.setActivityCallback(this);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
                 .replace(R.id.fragment_container, addTaskFragment).commit();
@@ -79,58 +104,97 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onBackPressed() {
-        if(addTaskFragment != null){
-            if(addTaskFragment.isAdded()) {
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
-                        .remove(addTaskFragment).commit();
-            }else {
-                super.onBackPressed();
-            }
-        }
-        if(taskViewFragment != null) {
-            if (taskViewFragment.isAdded()) {
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
-                        .remove(taskViewFragment).commit();
-            } else {
-                super.onBackPressed();
-            }
+        if (taskViewFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
+                    .remove(taskViewFragment).commit();
+        } else if (addTaskFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
+                    .remove(addTaskFragment).commit();
+        } else {
+            super.onBackPressed();
         }
     }
 
     @Override
     public void viewTask(int position) {
-        taskViewFragment = TaskViewFragment.newInstance();
         taskViewFragment.setActivityCallback(this);
         Bundle bundle = new Bundle();
         bundle.putInt(TASK_POSITION, position);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                .replace(R.id.fragment_container,taskViewFragment ).commit();
+                .replace(R.id.fragment_container, taskViewFragment).commit();
         taskViewFragment.setArguments(bundle);
 
     }
 
     @Override
     public TaskDatabase taskDatabase() {
-        return ((TaskApplication) getApplicationContext() ).getDatabase();
+        return ((TaskApplication) getApplicationContext()).getDatabase();
+    }
+
+    @Override
+    public void longPressDeleteTask(final Task task) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete_game)
+                .setMessage(R.string.delete_message)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //Update database with updated game information
+                        taskDatabase.taskDAO().deleteTask(task);
+                        //Let our adapter know that information in the database has changed to update our view accordingly
+                        taskAdapter.loadTaskList(taskDatabase.taskDAO().getTasks());
+
+                        Toast.makeText(MainActivity.this, R.string.delete_game, Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     @Override
     public void setCompleteStatus(TextView textView) {
         textView.setText(getString(R.string.status, getString(R.string.complete)));
-        sortList.setSelection(0);
     }
 
     @Override
     public void setinCompleteStatus(TextView textView) {
         textView.setText(getString(R.string.status, getString(R.string.incomplete)));
-        sortList.setSelection(0);
+    }
+
+    @Override
+    public List<Task> getTaskList() {
+        return taskList;
+    }
+
+    @Override
+    public void setTaskList(List<Task> taskList) {
+        this.taskList = taskList;
     }
 
 
     @Override
     public void updateAdapter() {
         taskAdapter.loadTaskList(taskDatabase.taskDAO().getTasks());
-        taskAdapter.notifyDataSetChanged();
-        sortList.setSelection(0);
+    }
+
+
+    @Override
+    public void editTask(int position) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(TASK_POSITION_EDIT, position);
+        bundle.putString("TYPE", "EDIT");
+        addTaskFragment.setActivityCallback(this);
+        getSupportFragmentManager().beginTransaction().remove(taskViewFragment).commit();
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
+                .replace(R.id.fragment_container, addTaskFragment).commit();
+        addTaskFragment.setArguments(bundle);
+
     }
 }

@@ -2,6 +2,7 @@ package com.example.barakamulungula.todolist;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.ParseException;
@@ -21,12 +23,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddTaskFragment extends Fragment implements DateCallBack{
+import static com.example.barakamulungula.todolist.MainActivity.TASK_POSITION_EDIT;
+
+public class AddTaskFragment extends Fragment implements DateCallBack {
 
     @BindView(R.id.text_input_title)
     protected TextInputEditText titleInput;
@@ -34,10 +39,27 @@ public class AddTaskFragment extends Fragment implements DateCallBack{
     protected TextInputEditText descriptionInput;
     @BindView(R.id.due_date)
     protected Button dueDateButton;
+    @BindView(R.id.due_time)
+    protected Button dueTimeButton;
     private String dueDate;
+    private String dueTime;
+    @BindView(R.id.save_task)
+    Button saveTaskButton;
+    @BindView(R.id.update_task)
+    Button updateTaskButton;
 
     private TaskDatabase taskDatabase;
     private ActivityCallback activityCallback;
+    private int position;
+
+    public static AddTaskFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        AddTaskFragment fragment = new AddTaskFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public void setActivityCallback(ActivityCallback activityCallback) {
         this.activityCallback = activityCallback;
@@ -56,55 +78,118 @@ public class AddTaskFragment extends Fragment implements DateCallBack{
         super.onStart();
         assert getActivity() != null;
         taskDatabase = ((TaskApplication) getActivity().getApplicationContext()).getDatabase();
+        titleInput.setText("");
+        descriptionInput.setText("");
+        if(getArguments() != null) {
+            if (!getArguments().isEmpty()) {
+                updateTaskButton.setVisibility(View.VISIBLE);
+                saveTaskButton.setVisibility(View.GONE);
+                position = getArguments().getInt(TASK_POSITION_EDIT);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(taskDatabase.taskDAO().getTasks().get(position).getDueDate());
+                Date date = calendar.getTime();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+                dueDateButton.setText(simpleDateFormat.format(date));
+                dueTimeButton.setText(simpleTimeFormat.format(date));
+                titleInput.setText(taskDatabase.taskDAO().getTasks().get(position).getTitle());
+                descriptionInput.setText(taskDatabase.taskDAO().getTasks().get(position).getDescription());
+                dueDateButton.setTextColor(Color.BLACK);
+                dueTimeButton.setTextColor(Color.BLACK);
+                getArguments().clear();
+            }
+        }
     }
 
-    public static AddTaskFragment newInstance() {
 
-        Bundle args = new Bundle();
-
-        AddTaskFragment fragment = new AddTaskFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @OnClick(R.id.save_task)
-    protected void saveTask(){
+    protected void saveTask() {
+        //Todo: Add created date to Task
         String title = titleInput.getText().toString();
         String description = descriptionInput.getText().toString();
-        if(!title.trim().isEmpty() && !description.trim().isEmpty() && dueDate != null){
+        if (!title.trim().isEmpty() && !description.trim().isEmpty() && dueDate != null) {
             try {
-                Date due_date = new SimpleDateFormat("MM/dd/yy", Locale.US).parse(dueDate);
-                taskDatabase.taskDAO().addTask(new Task(title,description,due_date,due_date, false));
+                Date due_date = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US).parse(dueDate+" "+dueTime);
+                Calendar dateCreated = Calendar.getInstance();
+                Date date_created = dateCreated.getTime();
+                taskDatabase.taskDAO().addTask(new Task(title, description, date_created, due_date, false));
                 assert getActivity() != null;
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
                 activityCallback.updateAdapter();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
+            Toast.makeText(getActivity(), "All input fields required", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    //Todo: update task
+    @OnClick(R.id.update_task)
+    protected void updateTask(){
+        String title = titleInput.getText().toString();
+        String description = descriptionInput.getText().toString();
+        dueDate = dueDateButton.getText().toString().concat(" "+dueTimeButton.getText().toString());
+        if (!title.trim().isEmpty() && !description.trim().isEmpty() && dueDate != null) {
+            try {
+                Date due_date = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US).parse(dueDate+" "+dueTime);
+                Task task = taskDatabase.taskDAO().getTasks().get(position);
+                task.setTitle(title);
+                task.setDescription(description);
+                task.setDueDate(due_date);
+                taskDatabase.taskDAO().updateTask(task);
+                saveTaskButton.setVisibility(View.VISIBLE);
+                updateTaskButton.setVisibility(View.GONE);
+                assert getActivity() != null;
+                getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+                assert getArguments() != null;
+                getArguments().clear();
+                activityCallback.updateAdapter();
+                Toast.makeText(getActivity(), "Task updated", Toast.LENGTH_SHORT).show();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
             Toast.makeText(getActivity(), "All input fields required", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     @OnClick(R.id.due_date)
-    protected void setDueDate(){
+    protected void setDueDate() {
         DatePickerFragment datePickerFragment = new DatePickerFragment();
         datePickerFragment.attachParent(this);
-        DialogFragment newFragment = datePickerFragment;
         assert getActivity() != null;
-        newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+        datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+
+    }
+
+    @OnClick(R.id.due_time)
+    protected void setDueTime(){
+        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        timePickerFragment.setDateCallBack(this);
+        assert getActivity() != null;
+        timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
 
     }
 
     @Override
     public void setDueDate(int year, int month, int day) {
-        dueDate = month+"/"+day+"/"+year;
+        dueDate = month + "/" + day + "/" + year;
         dueDateButton.setText(getString(R.string.due_date_button, month, day, year));
         dueDateButton.setTextColor(Color.BLACK);
     }
 
-    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+    @Override
+    public void setDueTime(int hour, int minute) {
+        dueTime = hour+":"+minute;
+        dueTimeButton.setText(dueTime);
+        dueTimeButton.setTextColor(Color.BLACK);
+    }
+
+    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         private DateCallBack dateCallBack;
 
         public void attachParent(DateCallBack dateCallBack) {
@@ -113,7 +198,7 @@ public class AddTaskFragment extends Fragment implements DateCallBack{
 
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            dateCallBack.setDueDate(year, month+1, dayOfMonth);
+            dateCallBack.setDueDate(year, month + 1, dayOfMonth);
         }
 
         @NonNull
@@ -131,8 +216,28 @@ public class AddTaskFragment extends Fragment implements DateCallBack{
 
     }
 
+    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener{
+        private DateCallBack dateCallBack;
 
+        public void setDateCallBack(DateCallBack dateCallBack) {
+            this.dateCallBack = dateCallBack;
+        }
 
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            dateCallBack.setDueTime(hourOfDay, minute);
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            assert getActivity() != null;
+            return new TimePickerDialog(getActivity(), this, hour, minute,false);
+        }
+    }
 
 
 
