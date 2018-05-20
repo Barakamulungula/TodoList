@@ -15,7 +15,6 @@
 
     <Spinner
         android:id="@+id/sort_task_list"
-        android:background="@drawable/button_border"
         android:backgroundTint="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -42,32 +41,15 @@
         android:id="@+id/add_task_button"
         android:layout_width="0dp"
         android:text="add task"
-        android:textColor="@android:color/white"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="40sp"
         android:padding="2dp"
         android:layout_margin="5dp"
-        android:background="@color/colorPrimaryDark"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
-
-    <Button
-        android:id="@+id/remove_task_button"
-        android:layout_width="0dp"
-        android:visibility="gone"
-        android:clickable="false"
-        android:text="add task"
-        android:textColor="@android:color/white"
-        android:textSize="40sp"
-        android:padding="2dp"
-        android:layout_margin="5dp"
-        android:background="@color/colorPrimaryDark"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
 
 
 

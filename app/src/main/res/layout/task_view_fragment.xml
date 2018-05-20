@@ -11,7 +11,9 @@
     <TextView
         android:id="@+id/view_task_title"
         android:textSize="40sp"
+        android:fontFamily="monospace"
         android:layout_margin="20dp"
+        android:text="@string/incomplete"
         android:textColor="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,11 +43,13 @@
         android:text="@string/sample_desc"
         android:textSize="25sp"
         android:layout_margin="20dp"
+        android:fontFamily="monospace"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/hr"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/view_task_description"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content" />
 
     <Button
@@ -82,6 +86,7 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <TextView
+            android:fontFamily="monospace"
             android:id="@+id/text_view_date_created"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -92,6 +97,7 @@
             />
 
         <TextView
+            android:fontFamily="monospace"
             android:id="@+id/task_view_date_due"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -101,6 +107,7 @@
             />
 
         <TextView
+            android:fontFamily="monospace"
             android:id="@+id/task_view_date_completed"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -109,6 +116,7 @@
             android:text="@string/date_completed"
             />
         <TextView
+            android:fontFamily="monospace"
             android:id="@+id/task_view_status"
             android:textColor="@android:color/white"
             android:textSize="20sp"

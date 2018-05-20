@@ -74,7 +74,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         void bind(Task task) {
             titleTextView.setText(task.getTitle());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US);
-            dueDateTextView.setText(simpleDateFormat.format(task.getDueDate()));
+            adapterCallBack.setDueDateString(dueDateTextView, simpleDateFormat.format(task.getDueDate()));
             if(task.isCompleted()){
                     itemConstraintLayout.setBackgroundResource(R.color.to_completed_task);
                     adapterCallBack.setCompleteStatus(taskStatusTextView);
@@ -85,7 +85,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
         }
 
-        //Todo: Handle on onlong press event on adpater items
         public View.OnLongClickListener onLongClickListener(final int position) {
             return new View.OnLongClickListener() {
                 @Override

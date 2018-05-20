@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected Spinner sortList;
     @BindView(R.id.task_recycler_view)
     protected RecyclerView recyclerView;
-    @BindView(R.id.remove_task_button)
-    protected Button removeTaskButton;
     @BindView(R.id.add_task_button)
     protected Button addTaskButton;
     private TaskAdapter taskAdapter;
@@ -80,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        //Todo: Handle spinner onitemselected events
         if (position == 1) {
             taskList = taskDatabase.taskDAO().getCompletedTask(true);
             spinnerListType = position;
@@ -133,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                 .replace(R.id.fragment_container, taskViewFragment).commit();
         taskViewFragment.setArguments(bundle);
+        sortList.setSelection(0);
 
     }
 
@@ -186,6 +184,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void setTaskList(List<Task> taskList) {
         this.taskList = taskList;
+    }
+
+    @Override
+    public void setDueDateString(TextView textView, String dueDate) {
+        textView.setText(getString(R.string.due_date, dueDate));
     }
 
 

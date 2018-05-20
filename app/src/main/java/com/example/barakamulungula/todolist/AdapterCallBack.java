@@ -10,4 +10,5 @@ public interface AdapterCallBack {
     void longPressDeleteTask(final Task task);
     void setCompleteStatus(TextView textView);
     void setinCompleteStatus(TextView textView);
+    void setDueDateString(TextView textView, String dueDate);
 }

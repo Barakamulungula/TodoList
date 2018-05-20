@@ -12,6 +12,7 @@
     <TextView
         android:id="@+id/title"
         android:text="Homework"
+        android:fontFamily="monospace"
         android:textSize="30sp"
         android:layout_margin="2dp"
         android:textColor="@android:color/white"
@@ -22,6 +23,7 @@
     <TextView
         android:id="@+id/date_created"
         android:textSize="15sp"
+        android:fontFamily="monospace"
         android:text="Due Date: 05/08/18 5pm"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -31,6 +33,7 @@
     <TextView
         android:id="@+id/status"
         android:textSize="15sp"
+        android:fontFamily="monospace"
         android:text="@string/incomplete"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/date_created"

@@ -5,8 +5,8 @@
     <string name="date_created">Date added: %1$s</string>
     <string-array name="sort_list">
         <item>All task</item>
-        <item>Status: Completed</item>
-        <item>Status: Incomplete</item>
+        <item>Completed task</item>
+        <item>Incomplete task</item>
     </string-array>
     <string name="due_date">Due date: %1$s</string>
     <string name="status">Status: %1$s</string>

@@ -1,5 +1,7 @@
 package com.example.barakamulungula.todolist;
 
+import android.widget.TextView;
+
 import java.util.List;
 
 public interface ActivityCallback {

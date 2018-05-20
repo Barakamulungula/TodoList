@@ -107,7 +107,6 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
 
     @OnClick(R.id.save_task)
     protected void saveTask() {
-        //Todo: Add created date to Task
         String title = titleInput.getText().toString();
         String description = descriptionInput.getText().toString();
         if (!title.trim().isEmpty() && !description.trim().isEmpty() && dueDate != null) {
@@ -128,7 +127,6 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
 
     }
 
-    //Todo: update task
     @OnClick(R.id.update_task)
     protected void updateTask(){
         String title = titleInput.getText().toString();
