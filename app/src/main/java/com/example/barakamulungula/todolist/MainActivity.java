@@ -198,6 +198,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
+    public void showFloatingActionButton() {
+        addTaskButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void setDueDateString(TextView textView, String dueDate) {
         textView.setText(getString(R.string.due_date, dueDate));
     }

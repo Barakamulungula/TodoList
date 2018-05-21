@@ -16,4 +16,5 @@ public interface AdapterCallBack {
     void setinCompleteStatus(TextView textView);
 
     void setDueDateString(TextView textView, String dueDate);
+    void showFloatingActionButton();
 }

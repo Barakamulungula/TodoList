@@ -145,6 +145,7 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
                 getArguments().clear();
                 checkListType();
                 Toast.makeText(getActivity(), "Task updated", Toast.LENGTH_SHORT).show();
+                activityCallback.showFloatingActionButton();
             } catch (ParseException e) {
                 e.printStackTrace();
             }

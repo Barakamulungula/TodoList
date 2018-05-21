@@ -142,6 +142,7 @@ public class TaskViewFragment extends Fragment {
                 .remove(this).commit();
         Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
         checkListType();
+        activityCallback.showFloatingActionButton();
     }
 
     private void checkListType() {

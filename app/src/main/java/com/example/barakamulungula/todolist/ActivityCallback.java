@@ -10,4 +10,6 @@ public interface ActivityCallback {
     List<Task> getTaskList();
 
     void setTaskList(List<Task> taskList);
+
+    void showFloatingActionButton();
 }
