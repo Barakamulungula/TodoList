@@ -1,12 +1,12 @@
 package com.example.barakamulungula.todolist;
 
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,18 +28,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public static final String TASK_POSITION_EDIT = "TASK_POSITION";
     public static final String SPINNER_LIST_TYPE = "TYPE";
     public static final String CLICK_TYPE = "EDIT/ADD_TASK";
-    private List<Task> taskList = new ArrayList<>();
     @BindView(R.id.sort_task_list)
     protected Spinner sortList;
     @BindView(R.id.task_recycler_view)
     protected RecyclerView recyclerView;
     @BindView(R.id.add_task_button)
-    protected Button addTaskButton;
+    protected FloatingActionButton addTaskButton;
+    private List<Task> taskList = new ArrayList<>();
     private TaskAdapter taskAdapter;
     private AddTaskFragment addTaskFragment;
     private TaskViewFragment taskViewFragment;
     private TaskDatabase taskDatabase;
-    private int spinnerListType= 0;
+    private int spinnerListType = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onStart() {
         super.onStart();
         taskList = taskDatabase.taskDAO().getTasks();
+        showActionButton();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        showActionButton();
     }
 
     @Override
@@ -84,8 +91,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } else if (position == 2) {
             taskList = taskDatabase.taskDAO().getinCompleteTask(false);
             spinnerListType = position;
-        }
-        else if(position == 0){
+        } else if (position == 0) {
             taskList = taskDatabase.taskDAO().getTasks();
             spinnerListType = position;
         }
@@ -102,11 +108,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void addTask() {
         Bundle bundle = new Bundle();
         bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
-        bundle.putInt(CLICK_TYPE, 0);bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
+        bundle.putInt(CLICK_TYPE, 0);
+        bundle.putInt(SPINNER_LIST_TYPE, spinnerListType);
         addTaskFragment.setActivityCallback(this);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
                 .replace(R.id.fragment_container, addTaskFragment).commit();
         addTaskFragment.setArguments(bundle);
+        hideActionButton();
     }
 
     @Override
@@ -114,9 +122,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (taskViewFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
                     .remove(taskViewFragment).commit();
+            showActionButton();
         } else if (addTaskFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_right)
                     .remove(addTaskFragment).commit();
+            showActionButton();
         } else {
             super.onBackPressed();
         }
@@ -131,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .replace(R.id.fragment_container, taskViewFragment).commit();
         taskViewFragment.setArguments(bundle);
         sortList.setSelection(0);
+        hideActionButton();
 
     }
 
@@ -209,6 +220,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
                 .replace(R.id.fragment_container, addTaskFragment).commit();
         addTaskFragment.setArguments(bundle);
+        hideActionButton();
 
+    }
+
+    private void hideActionButton(){
+        addTaskButton.setVisibility(View.GONE);
+    }
+
+    private void showActionButton(){
+        addTaskButton.setVisibility(View.VISIBLE);
     }
 }

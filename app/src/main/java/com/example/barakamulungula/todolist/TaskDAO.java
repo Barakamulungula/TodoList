@@ -14,9 +14,6 @@ public interface TaskDAO {
     @Query("SELECT * FROM TASK")
     List<Task> getTasks();
 
-    @Query("SELECT * FROM TASK WHERE id LIKE :id")
-    List<Task> getSelectedTask(int id);
-
     @Query("SELECT * FROM TASK WHERE IsCompleted LIKE :completed")
     List<Task> getCompletedTask(final boolean completed);
 

@@ -3,7 +3,6 @@ package com.example.barakamulungula.todolist;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-
 import java.util.Date;
 
 @Entity
@@ -46,7 +45,7 @@ public class Task {
     public Date getDateCreated() {
         return dateCreated;
     }
-    
+
     public Date getDueDate() {
         return dueDate;
     }

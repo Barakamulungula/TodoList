@@ -3,18 +3,12 @@ package com.example.barakamulungula.todolist;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -75,12 +69,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
             titleTextView.setText(task.getTitle());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm", Locale.US);
             adapterCallBack.setDueDateString(dueDateTextView, simpleDateFormat.format(task.getDueDate()));
-            if(task.isCompleted()){
-                    itemConstraintLayout.setBackgroundResource(R.color.to_completed_task);
-                    adapterCallBack.setCompleteStatus(taskStatusTextView);
+            if (task.isCompleted()) {
+                itemConstraintLayout.setBackgroundResource(R.color.to_completed_task);
+                adapterCallBack.setCompleteStatus(taskStatusTextView);
             } else {
-                    itemConstraintLayout.setBackgroundResource(R.color.passed_due_time);
-                    adapterCallBack.setinCompleteStatus(taskStatusTextView);
+                itemConstraintLayout.setBackgroundResource(R.color.passed_due_time);
+                adapterCallBack.setinCompleteStatus(taskStatusTextView);
             }
 
         }

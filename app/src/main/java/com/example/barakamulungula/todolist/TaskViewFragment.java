@@ -43,10 +43,10 @@ public class TaskViewFragment extends Fragment {
     ConstraintLayout taskViewLayout;
     @BindView(R.id.task_view_is_completed)
     CheckBox statusCheckbox;
+    DateFormat dateFormat;
     private int position;
     private TaskDatabase taskDatabase;
     private ActivityCallback activityCallback;
-    DateFormat dateFormat;
 
     public static TaskViewFragment newInstance() {
 
@@ -120,7 +120,7 @@ public class TaskViewFragment extends Fragment {
             dateCompletedTextView.setVisibility(View.VISIBLE);
             dateCompletedTextView.setText(
                     getString(R.string.date_completed,
-                    dateFormat.format(activityCallback.getTaskList().get(position).getDateCompleted())));
+                            dateFormat.format(activityCallback.getTaskList().get(position).getDateCompleted())));
             taskViewLayout.setBackgroundResource(R.color.to_completed_task);
             taskStatus.setText(getString(R.string.status, getString(R.string.complete)));
             statusCheckbox.setChecked(true);
@@ -144,15 +144,15 @@ public class TaskViewFragment extends Fragment {
         checkListType();
     }
 
-    private void checkListType(){
+    private void checkListType() {
         assert getArguments() != null;
-        if(getArguments().getInt(SPINNER_LIST_TYPE) == 1){
+        if (getArguments().getInt(SPINNER_LIST_TYPE) == 1) {
             activityCallback.setTaskList(taskDatabase.taskDAO().getCompletedTask(true));
             activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(true));
-        }else if(getArguments().getInt(SPINNER_LIST_TYPE) == 2){
+        } else if (getArguments().getInt(SPINNER_LIST_TYPE) == 2) {
             activityCallback.setTaskList(taskDatabase.taskDAO().getinCompleteTask(false));
             activityCallback.updateAdapter(taskDatabase.taskDAO().getCompletedTask(false));
-        }else{
+        } else {
             activityCallback.setTaskList(taskDatabase.taskDAO().getTasks());
             activityCallback.updateAdapter(taskDatabase.taskDAO().getTasks());
         }
