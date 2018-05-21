@@ -115,6 +115,7 @@ public class AddTaskFragment extends Fragment implements DateCallBack {
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
                 checkListType();
                 activityCallback.setTaskList(activityCallback.getTaskList());
+                activityCallback.showFloatingActionButton();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
